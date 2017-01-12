@@ -1,0 +1,7 @@
+#!/usr/bin/sh
+# Run pacaur -Syu using expect
+
+# tty command not easily available in expect so set it correctly here
+export tty=$(tty)
+#exec /home/andrew/projects/pacaur_automation/psyu.expect
+psyu.expect && pllsyu

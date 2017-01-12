@@ -1,0 +1,55 @@
+#! /usr/bin/expect -f
+
+set timeout -1
+# This script relies on the name of the tty being set as a global variable
+# since tcl's tty command is not available for reason's I don't understand
+if {"[array names env -exact tty]" eq "tty"} {
+    set on_tty " on $env(tty)"
+} else {
+    set on_tty ""
+}
+
+proc do_pacaur args {
+    global on_tty
+    global pacaur_spawn_id
+    spawn -noecho /usr/bin/notify-send "pacaur starting AUR upgrade" "Interaction required$on_tty" --urgency=normal --icon=dialog-information
+    set spawn_id $pacaur_spawn_id
+    interact 
+}
+
+proc single_line_entry args {
+    interact "\r" return
+    send "\r"
+}
+
+proc abort args {
+    send_user "found abort"
+    global on_tty
+    spawn -noecho /usr/bin/notify-send "pacaur upgrade failed" "No packages were upgraded$on_tty" --urgency=normal --icon=dialog-information
+    sleep 1
+    exit 1
+}
+
+
+# First spawn pacaur
+#spawn /home/andrew/projects/pacaur_automation/test.sh
+spawn pacaur -Syu
+set pacaur_spawn_id $spawn_id
+
+# Test for sudo. Get password and return to automation
+expect {
+    "*assword" single_line_entry
+    ":: Synchronising"
+}
+
+# pacman stage: look for replacing package, errors occurred, ?conflict, 'Proceed with installation'
+expect {
+    ":: Replace" {send "Y\r"; exp_continue}
+    "Proceed with installation?"   {send "Y\r"; exp_continue}
+    "error:" abort
+    ":: Starting AUR upgrade..." do_pacaur
+}
+
+# pacaur has finished: show list of packages that have been upgraded in less
+#spawn /home/andrew/projects/pacaur_automation/plt
+#interact

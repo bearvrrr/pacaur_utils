@@ -1,0 +1,3 @@
+#!/usr/bin/sh
+# Pacaur Less Latest SYU
+tac /var/log/pacman.log | awk "1;/\[PACMAN\] Running 'pacman -S -y -u'/{exit}" | tac | less
