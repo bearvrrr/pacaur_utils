@@ -44,8 +44,8 @@ expect {
 
 # pacman stage: look for replacing package, errors occurred, ?conflict, 'Proceed with installation'
 expect {
-    ":: Replace" {send "Y\r"; exp_continue}
-    "Proceed with installation?"   {send "Y\r"; exp_continue}
+    ":: Replace" {sleep 1; send "Y\r"; exp_continue}
+    "Proceed with installation?"   {sleep 1; send "Y\r"; exp_continue}
     "error:" abort
     ":: Starting AUR upgrade..." do_pacaur
 }
