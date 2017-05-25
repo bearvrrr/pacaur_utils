@@ -46,6 +46,7 @@ expect {
 expect {
     ":: Replace" {sleep 1; send "Y\r"; exp_continue}
     "Proceed with installation?"   {sleep 1; send "Y\r"; exp_continue}
+    ":: Import PGP key" single_line_entry
     "error:" abort
     ":: Starting AUR upgrade..." do_pacaur
 }
